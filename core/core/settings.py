@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-*t(re4+!$s-(v2pe1)$8a+70b&$lzu^n(e%^51_glp2ldowa=c"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -26,6 +25,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     "corsheaders",
+
+    # local apps
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
