@@ -39,3 +39,4 @@ class SignUpAPI(generics.GenericAPIView):
             "user": UserSerializer(user).data,
             "token": AuthToken.objects.create(user)[1],
         }, status=status.HTTP_201_CREATED)
+
