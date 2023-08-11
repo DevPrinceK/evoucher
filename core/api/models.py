@@ -60,8 +60,8 @@ class Voucher(models.Model):
     voucher_id = models.CharField(max_length=50, default=generate_voucher_id, unique=True)  # noqa
     event = models.ForeignKey(Event, null=True, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    # event_type = BASIC, PREMIUM, VIP
-    event_type = models.CharField(max_length=50, default="BASIC")
+    # event_type = SILVER, GOLD, DIAMOND
+    voucher_type = models.CharField(max_length=50, default="SILVER")
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -75,22 +75,26 @@ class EventVoucher(models.Model):
     times_redeemed = models.IntegerField(default=0)
     redeemed_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="event_organizer")  # noqa
 
     def is_redeemed(self) -> bool:
         '''For checking if a voucher has been redeemed already - returns True or False'''
-        if self.voucher.event_type == "BASIC" and self.is_redeemed >= 1:
+        if self.voucher.event_type == "SILVER" and self.times_redeemed >= 1:
             return True
-        elif self.voucher.event_type == "PREMIUM" and self.is_redeemed >= 2:
+        elif self.voucher.event_type == "GOLD" and self.times_redeemed >= 2:
             return True
-        elif self.voucher.event_type == "VIP" and self.is_redeemed >= 3:
+        elif self.voucher.event_type == "DIAMOND" and self.times_redeemed >= 3:
             return True
         else:
             return False
 
-    def redeem(self):
+    def redeem(self, restaurant: User):
         '''Implements redeeming of voucher'''
         self.times_redeemed += 1
         self.save()
+        # credit restaurant's wallet with the amount on the voucher
+        wallet = Wallet.objects.filter(owner=restaurant).first()
+        wallet.credit_wallet(self.voucher.amount)
 
     def __str__(self):
         return self.voucher.voucher_id + " - " + self.redeemer.get_fullname()
