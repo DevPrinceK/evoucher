@@ -6,7 +6,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Event
+from api.models import Event, User
 from api.serializers import EventsSerializer
 
 
@@ -77,3 +77,55 @@ class CUDEventAPI(APIView):
             return Response({
                 "message": "Event Not Found"
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class AddEventParticipantAPI(APIView):
+    '''For users to register as participants of the event'''
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        '''Uses the post request to add a participant to the event'''
+        user = request.user
+        event_id = request.data.get("event_id")
+        event = Event.objects.filter(id=event_id).first()
+        if event is not None:
+            event.participants.add(user)
+            event.save()
+            serializer = EventsSerializer(event, many=False)
+            return Response({
+                "event": serializer.data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "message": "Event Not Found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+class RemoveParticipant(APIView):
+    '''Used by event organizers to remove participants from event participants'''
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        '''Uses delete request to remove participant from event participants'''
+        event_id = request.data.get("event_id")
+        event = Event.objects.filter(id=event_id).first()
+
+        if not event:
+            return Response({"message": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        participant_email = request.data.get("participant_email")
+        participant = User.objects.filter(email=participant_email).first()
+
+        if not participant:
+            return Response({"message": "Participant Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the participant is in the event participants
+        if participant in event.participants.all():
+            event.participants.remove(participant)
+            return Response({"message": "Participant Removed Successfully"},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "User is Not a Participant of the Event"},
+                            status=status.HTTP_400_BAD_REQUEST)
