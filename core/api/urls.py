@@ -22,4 +22,23 @@ urlpatterns += [
     path("all-events/", views.EventListAPI.as_view(), name="all_events"),
     # create, update, delete event
     path("cud-event/", views.CUDEventAPI.as_view(), name="cud_events"),
+    # add participant to event
+    path("add-participant/", views.AddEventParticipantAPI.as_view()),
+    path("rem-participant/", views.RemoveParticipant.as_view()),
+]
+
+# vouchers
+urlpatterns += [
+    # gets system statistics
+    path("stats/", views.SystemStatsAPI.as_view(), name="stats"),
+    # Gets all vouchers created by user
+    path("all-vouchers/", views.VoucherListAPI.as_view(), name="all_vouchers"),
+    # create, update, delete voucher
+    path("cud-voucher/", views.CUDVoucherAPI.as_view(), name="cud_vouchers"),
+    # revoke redeemer's ability to redeem a voucher
+    path("revoke-redeemer/", views.RevokeRedeemersVoucherAPI.as_view()),
+    # redeems user's voucher
+    path("redeem-voucher/", views.RedeemVoucherAPI.as_view()),
+    # sends vouchers to event participants
+    path("broadcast-voucher/", views.BroadcastVoucherAPI.as_view())
 ]
