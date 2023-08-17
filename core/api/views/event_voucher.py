@@ -132,7 +132,7 @@ class RevokeRedeemersVoucherAPI(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         voucher_id = request.data.get("voucher_id")
-        voucher = Voucher.objects.filter(voucher_id=voucher_id).first()
+        voucher = Voucher.objects.filter(created_by=user, voucher_id=voucher_id).first()
 
         redeemer_email = request.data.get("redeemer_email")
         redeemer = User.objects.filter(email=redeemer_email).first()

@@ -113,7 +113,7 @@ class RemoveParticipant(APIView):
         event = Event.objects.filter(id=event_id).first()
 
         if not event:
-            return Response({"message": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "Event Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
         participant_email = request.data.get("participant_email")
         participant = User.objects.filter(email=participant_email).first()
