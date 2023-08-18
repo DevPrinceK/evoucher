@@ -18,6 +18,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def is_restaurant(self):
+        '''check if user is a restaurant'''
+        return self.role == 'RESTAURANT'
+    
+    def is_organizer(self):
+        '''check if user is an organization'''
+        return self.role == 'ORGANIZER'
 
     def get_fullname(self):
         '''return the full name of the user'''
