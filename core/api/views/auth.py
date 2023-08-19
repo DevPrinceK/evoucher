@@ -4,7 +4,6 @@ from knox.views import LoginView as KnoxLoginView
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from api.serializers import RegisterSerializer, UserSerializer
 
