@@ -1,16 +1,17 @@
-from django.contrib.auth import login
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
 
 from api.models import Event, EventVoucher, User, Voucher
-from api.serializers import VoucherSerializer
+from core.utils.decorators import OrganizerOnly, RestaurantOnly
 
 
 class SystemStatsAPI(APIView):
     '''For getting statistics on vouchers'''
     permission_classes = (permissions.IsAuthenticated,)
 
+    # still thinking about this
     def get(self, request, *args, **kwargs):
         '''Uses get request to relevant statistics on vouchers'''
         user = request.user
@@ -74,6 +75,9 @@ class SystemStatsAPI(APIView):
 class BroadcastVoucherAPI(APIView):
     '''Broadcast voucher to event participants'''
 
+    permission_classes = [permissions.IsAuthenticated]
+    
+    @method_decorator(OrganizerOnly)
     def post(self, request, *args, **kwargs):
         '''Uses post request to broadcast voucher to event participants'''''
         user = request.user
@@ -104,6 +108,7 @@ class RedeemVoucherAPI(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @method_decorator(RestaurantOnly)
     def post(self, request, *args, **kwargs):
         '''Uses post request to redeem voucher for event participant by restaurant'''  # noqa
         user = request.user
@@ -129,6 +134,7 @@ class RevokeRedeemersVoucherAPI(APIView):
     '''Revoke voucher from event participants'''
     permission_classes = [permissions.IsAuthenticated]
 
+    @method_decorator(OrganizerOnly)
     def delete(self, request, *args, **kwargs):
         user = request.user
         voucher_id = request.data.get("voucher_id")
