@@ -65,6 +65,7 @@ class SystemStatsAPI(APIView):
                 "gold": gold_redeemed,
                 "diamond": diamond_redeemed,
             },
+            "balance": user.get_balance(),
         }
 
         return Response({
