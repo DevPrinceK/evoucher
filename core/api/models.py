@@ -31,6 +31,28 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''return the full name of the user'''
         return self.fullname if self.fullname else self.email if self.email else 'Anonymous'  # noqa
 
+
+    def get_balance(self):
+        '''get user's wallet balance'''
+        wallet = Wallet.objects.filter(owner=self).first()
+        return wallet.get_wallet_balance() if wallet else 0.0
+    
+    def fund_wallet(self, amount):
+        '''credit user's wallet'''
+        wallet = Wallet.objects.filter(owner=self).first()
+        if wallet:
+            wallet.credit_wallet(amount)
+        else:
+            print("User has no wallet")
+            
+    def withdraw_wallet(self, amount):
+        '''debit user's wallet'''
+        wallet = Wallet.objects.filter(owner=self).first()
+        if wallet:
+            wallet.debit_wallet(amount)
+        else:
+            print("User has no wallet")
+    
     objects = AccountManager()
 
     USERNAME_FIELD = 'email'
