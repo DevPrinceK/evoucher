@@ -35,6 +35,8 @@ class CUDEventAPI(APIView):
         user = request.user
         name = request.data.get("name")
         date = request.data.get("date")
+        # convert 2023-08-31 00:00:00.000 to 2023-08-31
+        date = date.split(" ")[0]
         event = Event.objects.create(
             name=name,
             date=date,
@@ -50,7 +52,7 @@ class CUDEventAPI(APIView):
         '''Uses the put request to update existing event'''
         user = request.user
         event_id = request.data.get("event_id")
-        event = Event.objects.filter(id=event_id, created_by=user).first()  # noqa
+        event = Event.objects.filter(event_id=event_id, created_by=user).first()  # noqa
         name = request.data.get("name")
         date = request.data.get("date")
         if event is not None:
@@ -71,7 +73,7 @@ class CUDEventAPI(APIView):
         '''Uses the delete request to delete an event'''
         user = request.user
         event_id = request.data.get("event_id")
-        event = Event.objects.filter(id=event_id, created_by=user).first()  # noqa
+        event = Event.objects.filter(event_id=event_id, created_by=user).first()  # noqa
         if event is not None:
             event.delete()
             return Response({
@@ -93,7 +95,7 @@ class AddEventParticipantAPI(APIView):
         '''Uses the post request to add a participant to the event'''
         user = request.user
         event_id = request.data.get("event_id")
-        event = Event.objects.filter(id=event_id).first()
+        event = Event.objects.filter(event_id=event_id).first()
         if event is not None:
             event.participants.add(user)
             event.save()
@@ -116,7 +118,7 @@ class RemoveParticipant(APIView):
     def post(self, request, *args, **kwargs):
         '''Uses delete request to remove participant from event participants'''
         event_id = request.data.get("event_id")
-        event = Event.objects.filter(id=event_id).first()
+        event = Event.objects.filter(event_id=event_id).first()
 
         if not event:
             return Response({"message": "Event Not Found"}, status=status.HTTP_404_NOT_FOUND)
