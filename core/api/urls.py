@@ -42,3 +42,9 @@ urlpatterns += [
     # sends vouchers to event participants
     path("broadcast-voucher/", views.BroadcastVoucherAPI.as_view())
 ]
+
+# wallet
+urlpatterns += [
+    path("credit-wallet/", views.FundWalletAPI.as_view(), name="credit_wallet"),
+    path('debit-wallet/', views.WithdrawFromWalletAPI.as_view(), name='debit_wallet'),
+]
