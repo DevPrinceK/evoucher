@@ -14,6 +14,7 @@ urlpatterns = [
     path('logout/', knox_views.LogoutView.as_view(), name='logout'),
     # logout user from all sessions
     path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
+    path('change-profile/', views.ChangeProfileAPI.as_view(), name='change_profile'),
 ]
 
 # events
