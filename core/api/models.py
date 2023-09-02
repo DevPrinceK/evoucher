@@ -104,6 +104,7 @@ class EventVoucher(models.Model):
     redeemer = models.ForeignKey(User, on_delete=models.CASCADE)
     times_redeemed = models.IntegerField(default=0)
     redeemed_at = models.DateTimeField(auto_now_add=True)
+    redeemed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="voucher_redeemer")  # noqa
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="event_organizer")  # noqa
 
@@ -121,6 +122,7 @@ class EventVoucher(models.Model):
     def redeem(self, restaurant: User):
         '''Implements redeeming of voucher'''
         self.times_redeemed += 1
+        self.redeemed_by = restaurant
         self.save()
         # credit restaurant's wallet with the amount on the voucher
         wallet = Wallet.objects.filter(owner=restaurant).first()
