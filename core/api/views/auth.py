@@ -2,6 +2,7 @@ from django.contrib.auth import login
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 
@@ -39,3 +40,18 @@ class SignUpAPI(generics.GenericAPIView):
             "token": AuthToken.objects.create(user)[1],
         }, status=status.HTTP_201_CREATED)
 
+
+class ChangeProfileAPI(APIView):
+    '''Used to change user profile - fullname and email'''
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        fullname = request.data.get("fullname")
+        email = request.data.get("email")
+        user.fullname = fullname
+        user.email = email
+        user.save()
+        return Response({
+            "user": UserSerializer(user).data,
+        }, status=status.HTTP_200_OK)
