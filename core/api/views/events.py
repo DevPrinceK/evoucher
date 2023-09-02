@@ -7,18 +7,27 @@ from rest_framework.views import APIView
 from api.models import Event, User
 from api.serializers import EventsSerializer
 from django.utils.decorators import method_decorator
-from core.utils.decorators import OrganizerOnly, AppUserOnly
+from core.utils.decorators import OrganizerOnly, AppUserOnly, OrganizerAndAppUserOnly
 
 
 class EventListAPI(APIView):
-    '''For getting all events created by the requester'''
+    '''
+    For getting all events created by the requester
+    
+    or all events that a user is a participant of
+    '''
     permission_classes = (permissions.IsAuthenticated,)
 
-    @method_decorator(OrganizerOnly)
+    @method_decorator(OrganizerAndAppUserOnly)
     def get(self, request, *args, **kwargs):
-        '''Uses get request to fetch all events created by the user'''
+        '''Uses get request to fetch all events'''
         user = request.user
-        events = Event.objects.filter(created_by=user).order_by("-id")
+        if user.role == "APP_USER":
+            events = Event.objects.filter(participants=user).order_by("-id")
+        elif user.role == "ORGANIZER":    
+            events = Event.objects.filter(created_by=user).order_by("-id")
+        else:
+            events = []
         serializer = EventsSerializer(events, many=True)
         return Response({
             "events": serializer.data,
