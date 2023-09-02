@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from django.utils.decorators import method_decorator
 
 from api.models import Event, EventVoucher, User, Voucher
+from api.serializers import EventVoucherSerializer
 from core.utils.decorators import OrganizerOnly, RestaurantOnly
 
 
@@ -108,6 +109,17 @@ class RedeemVoucherAPI(APIView):
     '''Redeem voucher for event participant by restaurant'''
 
     permission_classes = [permissions.IsAuthenticated]
+    
+    @method_decorator(RestaurantOnly)
+    def get(self, request, *args, **kwargs):
+        '''uses get request to get all vouchers redeemed by restaurant'''
+        user = request.user
+        vouchers = EventVoucher.objects.filter(redeemed_by=user).order_by("-id")
+        serializer = EventVoucherSerializer(vouchers, many=True)
+        return Response({
+            "vouchers": serializer.data,
+        }, status=status.HTTP_200_OK)
+        
 
     @method_decorator(RestaurantOnly)
     def post(self, request, *args, **kwargs):
