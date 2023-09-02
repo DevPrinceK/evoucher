@@ -30,6 +30,16 @@ class VoucherSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class EventVoucherSerializer(serializers.ModelSerializer):
+    voucher = VoucherSerializer()
+    redeemer = UserSerializer()
+    created_by = UserSerializer()
+
+    class Meta:
+        model = EventVoucher
+        fields = '__all__'
+
+
 class WalletSerializer(serializers.ModelSerializer):
     owner = UserSerializer()
 
