@@ -35,7 +35,7 @@ class CUDVoucherAPI(APIView):
         amount = request.data.get("amount")
         voucher_type = request.data.get("voucher_type")
         event_id = request.data.get("event_id")
-        event = Event.objects.filter(event_id=event_id).first()
+        event = Event.objects.filter(id=event_id).first()
         if event is not None:
             voucher = Voucher.objects.create(
                 event=event,
@@ -48,6 +48,7 @@ class CUDVoucherAPI(APIView):
                 "voucher": serializer.data,
             }, status=status.HTTP_201_CREATED)
         else:
+            print("Event not found")
             return Response({
                 "message": "Event Not Found",
             }, status=status.HTTP_404_NOT_FOUND)
