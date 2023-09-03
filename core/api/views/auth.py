@@ -43,14 +43,16 @@ class SignUpAPI(generics.GenericAPIView):
 
 class ChangeProfileAPI(APIView):
     '''Used to change user profile - fullname and email'''
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
         user = request.user
         fullname = request.data.get("fullname")
         email = request.data.get("email")
+        print(fullname, email)
         user.fullname = fullname
-        user.email = email
+        if user.email != email:
+            user.email = email
         user.save()
         return Response({
             "user": UserSerializer(user).data,
