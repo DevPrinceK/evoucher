@@ -83,11 +83,11 @@ class CUDVoucherAPI(APIView):
         '''Uses the delete request to delete an event'''
         user = request.user
         voucher_id = request.data.get("voucher_id")
-        voucher = Voucher.objects.filter(id=voucher_id, created_by=user).first()  # noqa
+        voucher = Voucher.objects.filter(voucher_id=voucher_id, created_by=user).first()  # noqa
         if voucher is not None:
             voucher.delete()
             return Response({
-                "message": "Event Deleted Successfully",
+                "message": "Voucher Deleted Successfully",
             }, status=status.HTTP_200_OK)
         else:
             return Response({
