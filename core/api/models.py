@@ -7,7 +7,8 @@ from django.db import models
 from django.utils import timezone
 
 from .manager import AccountManager
-
+import random
+import string
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, unique=True)
@@ -69,7 +70,8 @@ class Event(models.Model):
 
     def generate_event_id():
         '''generate a unique event id'''
-        return f'EV{datetime.now().strftime("%Y%m%d%H%M%S%f")}'
+        digits = ''.join(random.choices(string.digits, k=5))
+        return f'EV#{digits}'
     event_id = models.CharField(max_length=100, default=generate_event_id, unique=True)  # noqa
     name = models.CharField(max_length=200)
     date = models.DateField()
@@ -86,7 +88,8 @@ class Voucher(models.Model):
 
     def generate_voucher_id():
         '''generate a unique voucher id'''
-        return f'VO{datetime.now().strftime("%Y%m%d%H%M%S%f")}'
+        digits = ''.join(random.choices(string.digits, k=5))
+        return f'VO#{digits}'
     voucher_id = models.CharField(max_length=50, default=generate_voucher_id, unique=True)  # noqa
     event = models.ForeignKey(Event, null=True, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
