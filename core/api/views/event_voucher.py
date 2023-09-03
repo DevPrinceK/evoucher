@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils.decorators import method_decorator
 
-from api.models import Event, EventVoucher, User, Voucher
+from api.models import Event, EventVoucher, User, Voucher, Wallet
 from api.serializers import EventVoucherSerializer
 from core.utils.decorators import OrganizerOnly, RestaurantOnly
 
@@ -97,6 +97,9 @@ class BroadcastVoucherAPI(APIView):
             event_vouchers = []
             participants = event.participants.all()
             for participant in participants:
+                # check for duplicate
+                if EventVoucher.objects.filter(voucher=voucher, redeemer=participant).exists():
+                    continue
                 ev = EventVoucher(voucher=voucher, redeemer=participant, created_by=user)  # noqa
                 event_vouchers.append(ev)
             EventVoucher.objects.bulk_create(event_vouchers)
@@ -114,10 +117,12 @@ class RedeemVoucherAPI(APIView):
     def get(self, request, *args, **kwargs):
         '''uses get request to get all vouchers redeemed by restaurant'''
         user = request.user
+        user_wallet = Wallet.objects.filter(owner=user).first()
         vouchers = EventVoucher.objects.filter(redeemed_by=user).order_by("-id")
         serializer = EventVoucherSerializer(vouchers, many=True)
         return Response({
             "vouchers": serializer.data,
+            "balance": user_wallet.get_wallet_balance() if user_wallet is not None else 0.0  # noqa,
         }, status=status.HTTP_200_OK)
         
 
