@@ -8,7 +8,7 @@ SECRET_KEY = "django-insecure-*t(re4+!$s-(v2pe1)$8a+70b&$lzu^n(e%^51_glp2ldowa=c
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['159.223.204.68','*']
 
 
 # Application definition
