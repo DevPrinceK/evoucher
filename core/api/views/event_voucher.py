@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 
 from api.models import Event, EventVoucher, User, Voucher, Wallet
 from api.serializers import EventVoucherSerializer
-from core.utils.decorators import OrganizerOnly, RestaurantOnly
+from core.utils.decorators import AppUserOnly, OrganizerOnly, RestaurantOnly
 
 
 class SystemStatsAPI(APIView):
@@ -78,6 +78,16 @@ class BroadcastVoucherAPI(APIView):
     '''Broadcast voucher to event participants'''
 
     permission_classes = [permissions.IsAuthenticated]
+    
+    @method_decorator(AppUserOnly)
+    def get(self, request, *args, **kwargs):
+        '''Gets all vouchers belonging to the participant'''
+        user = request.user
+        vouchers = EventVoucher.objects.filter(redeemer=user).order_by("-id")
+        serializer = EventVoucherSerializer(vouchers, many=True)
+        return Response({
+            "vouchers": serializer.data,
+        }, status=status.HTTP_200_OK)
     
     @method_decorator(OrganizerOnly)
     def post(self, request, *args, **kwargs):
