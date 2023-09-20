@@ -99,6 +99,12 @@ REST_KNOX = {
     'TOKEN_TTL': None,
 }
 
+# Django Extentions for extra functionality
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
+
 
 # django cors headers settings
 CORS_ALLOW_ALL_ORIGINS = True
